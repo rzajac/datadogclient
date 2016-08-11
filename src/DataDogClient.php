@@ -129,7 +129,7 @@ class DataDogClient
      *
      * @param string $metricName The metric name.
      * @param float  $value      The metric value.
-     * @param array  $tags       The associative array of tag => value.
+     * @param array  $tags       The indexed array of tags or associative tag => value.
      * @param float  $sampleRate The rate of sampling 0 to 1 (0-100%).
      *
      * @throws DataDogClientException
@@ -144,7 +144,7 @@ class DataDogClient
      *
      * @param string $metricName The metric name.
      * @param float  $value      The metric value.
-     * @param array  $tags       The associative array of tag => value.
+     * @param array  $tags       The indexed array of tags or associative tag => value.
      * @param float  $sampleRate The rate of sampling 0 to 1 (0-100%).
      *
      * @throws DataDogClientException
@@ -159,7 +159,7 @@ class DataDogClient
      *
      * @param string $metricName The metric name.
      * @param float  $value      The metric value.
-     * @param array  $tags       The associative array of tag => value.
+     * @param array  $tags       The indexed array of tags or associative tag => value.
      * @param float  $sampleRate The rate of sampling 0 to 1 (0-100%).
      *
      * @throws DataDogClientException
@@ -174,7 +174,7 @@ class DataDogClient
      *
      * @param string $metricName The metric name.
      * @param int    $delta      The counter delta value.
-     * @param array  $tags       The associative array of tag => value.
+     * @param array  $tags       The indexed array of tags or associative tag => value.
      * @param float  $sampleRate The rate of sampling 0 to 1 (0-100%).
      *
      * @throws DataDogClientException
@@ -188,7 +188,7 @@ class DataDogClient
      * Increment counter metric.
      *
      * @param string $metricName The metric name.
-     * @param array  $tags       The associative array of tag => value.
+     * @param array  $tags       The indexed array of tags or associative tag => value.
      * @param float  $sampleRate The rate of sampling 0 to 1 (0-100%).
      *
      * @throws DataDogClientException
@@ -202,7 +202,7 @@ class DataDogClient
      * Decrement counter metric.
      *
      * @param string $metricName The metric name.
-     * @param array  $tags       The associative array of tag => value.
+     * @param array  $tags       The indexed array of tags or associative tag => value.
      * @param float  $sampleRate The rate of sampling 0 to 1 (0-100%).
      *
      * @throws DataDogClientException
@@ -220,7 +220,7 @@ class DataDogClient
      * @param string $title The event title.
      * @param string $text  The event text. Supports line breaks.
      * @param array  $opt   The optional fields.
-     * @param array  $tags  The associative array of tag => value.
+     * @param array  $tags  The indexed array of tags or associative tag => value.
      *
      * @throws DataDogClientException
      */
@@ -248,7 +248,7 @@ class DataDogClient
      * @param string $title The event title.
      * @param string $text  The event text. Supports line breaks.
      * @param array  $opt   The optional fields.
-     * @param array  $tags  The associative array of tag => value.
+     * @param array  $tags  The indexed array of tags or associative tag => value.
      *
      * @throws DataDogClientException
      */
@@ -269,7 +269,7 @@ class DataDogClient
      * @param string $title The event title.
      * @param string $text  The event text. Supports line breaks.
      * @param array  $opt   The optional fields.
-     * @param array  $tags  The associative array of tag => value.
+     * @param array  $tags  The indexed array of tags or associative tag => value.
      *
      * @throws DataDogClientException
      */
@@ -334,7 +334,7 @@ class DataDogClient
      * @param string $name   The service check name string.
      * @param int    $status The one of self::SERVICE_* statuses.
      * @param array  $opt    The optional fields.
-     * @param array  $tags   The associative array of tag => value.
+     * @param array  $tags   The indexed array of tags or associative tag => value.
      *
      * @throws DataDogClientException
      */
@@ -357,7 +357,7 @@ class DataDogClient
      * @param string $title The event title.
      * @param string $text  The event text. Supports line breaks.
      * @param array  $opt   The optional fields.
-     * @param array  $tags  The associative array of tag => value.
+     * @param array  $tags  The indexed array of tags or associative tag => value.
      *
      * @return array
      */
@@ -395,7 +395,7 @@ class DataDogClient
      * Parse metric data and send to DataDog.
      *
      * @param array $data       The array with metrics.
-     * @param array $tags       The associative array of tag => value to add to metrics.
+     * @param array $tags       The indexed array of tags or associative tag => value.
      * @param float $sampleRate The rate of sampling 0 to 1 (0-100%).
      *
      * @throws DataDogClientException
@@ -417,7 +417,7 @@ class DataDogClient
     /**
      * Build tags for metric.
      *
-     * @param array $tags The associative array of tag => value to add to metrics.
+     * @param array $tags The indexed array of tags or associative tag => value.
      *
      * @return string
      */
