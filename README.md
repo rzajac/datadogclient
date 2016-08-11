@@ -7,7 +7,7 @@ Very simple [DataDog](http://www.datadoghq.com/) client.
 ```json
 {
     "require": {
-        "rzajac/datadogclient": "0.5.*"
+        "rzajac/datadogclient": "0.6.*"
     }
 }
 ```
@@ -22,12 +22,23 @@ Very simple [DataDog](http://www.datadoghq.com/) client.
 $ composer install
 $ vendor/bin/phpunit --coverage-html=coverage
 
-PHPUnit 5.5.0 by Sebastian Bergmann and contributors.
+................................................................. 65 / 98 ( 66%)
+.................................                                 98 / 98 (100%)
 
-................................................................. 65 / 82 ( 79%)
-.................                                                 82 / 82 (100%)
+Time: 974 ms, Memory: 8.00MB
 
-Time: 860 ms, Memory: 6.00MB
+OK (98 tests, 120 assertions)
 
-OK (82 tests, 101 assertions)
+Code Coverage Report:
+  2016-08-11 21:51:18
+
+ Summary:
+  Classes: 66.67% (2/3)
+  Methods: 89.66% (26/29)
+  Lines:   77.63% (118/152)
+
+\Kicaj\DataDog::DataDogBufferedClient
+  Methods: 100.00% ( 5/ 5)   Lines: 100.00% ( 13/ 13)
+\Kicaj\DataDog::DataDogClient
+  Methods:  87.50% (21/24)   Lines:  75.54% (105/139)
 ```

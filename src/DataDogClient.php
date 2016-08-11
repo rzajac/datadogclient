@@ -20,7 +20,7 @@ namespace Kicaj\DataDog;
 /**
  * DataDog client.
  *
- * Very simple PHP [datadogstatsd](http://www.datadoghq.com/) client.
+ * Very simple PHP [DataDog](http://www.datadoghq.com/) client.
  *
  * @author Rafal Zajac <rzajac@gmail.com>
  */
@@ -31,6 +31,9 @@ class DataDogClient
 
     /** Use non-blocking UDP to send metrics. */
     const UDP_NON_BLOCKING = 'UDP_NON_BLOCKING';
+
+    /** Use file to save metrics to. */
+    const UDP_FILE = 'file';
 
     /** Send event through UDP. */
     const EVENT_VIA_UDP = 'UDP';
@@ -53,6 +56,7 @@ class DataDogClient
     const CFG_SSL_VERIFY_PEER = 'curlSslVerifyPeer';
     const CFG_UDP_KIND = 'udpKind';
     const CFG_EVENTS_VIA = 'eventsVia';
+    const CFG_OUT_FILE_PATH = 'outFilePath';
 
     /**
      * DataDog client configuration.
@@ -68,6 +72,7 @@ class DataDogClient
         self::CFG_SSL_VERIFY_PEER => true,
         self::CFG_UDP_KIND        => self::UDP_NON_BLOCKING,
         self::CFG_EVENTS_VIA      => self::EVENT_VIA_UDP,
+        self::CFG_OUT_FILE_PATH   => '',
     ];
 
     /**
@@ -237,7 +242,7 @@ class DataDogClient
         $event .= isset($opt['alert_type']) ? '|t:' . $opt['alert_type'] : '';
         $event .= $this->buildTags($tags);
 
-        $this->send('_e{' . $titleLength . ',' . $textLength . '}:' . $event);
+        $this->send('_e{' . $titleLength . ',' . $textLength . '}:' . $title . '|' . $text . $event);
     }
 
     /**
@@ -254,10 +259,17 @@ class DataDogClient
      */
     public function event($title, $text, array $opt = [], array $tags = [])
     {
-        if ($this->config[self::CFG_EVENTS_VIA] == self::EVENT_VIA_HTTP) {
-            $this->eventHttp($title, $text, $opt, $tags);
-        } else {
-            $this->eventUdp($title, $text, $opt, $tags);
+        switch ($this->config[self::CFG_EVENTS_VIA]) {
+            case self::EVENT_VIA_HTTP:
+                $this->eventHttp($title, $text, $opt, $tags);
+                break;
+
+            case self::EVENT_VIA_UDP:
+                $this->eventUdp($title, $text, $opt, $tags);
+                break;
+
+            default:
+                throw new DataDogClientException('Unknown event send type: ' . $this->config[self::CFG_EVENTS_VIA]);
         }
     }
 
@@ -492,10 +504,21 @@ class DataDogClient
      */
     public function send($metric)
     {
-        if ($this->config[self::CFG_UDP_KIND] == self::UDP_NON_BLOCKING) {
-            $this->sendUdpNonBlocking($metric);
-        } else {
-            $this->sendUdpBlocking($metric);
+        switch ($this->config[self::CFG_UDP_KIND]) {
+            case self::UDP_NON_BLOCKING:
+                $this->sendUdpNonBlocking($metric);
+                break;
+
+            case self::UDP_BLOCKING:
+                $this->sendUdpBlocking($metric);
+                break;
+
+            case self::UDP_FILE:
+                $this->sendToFile($metric);
+                break;
+
+            default:
+                throw new DataDogClientException('Unknown metric send type: ' . $this->config[self::CFG_UDP_KIND]);
         }
     }
 
@@ -543,5 +566,15 @@ class DataDogClient
             throw new DataDogClientException('Error sending metric.');
         }
         fclose($fp);
+    }
+
+    /**
+     * Send metric to file.
+     *
+     * @param string $metric The metric to send to DataDog.
+     */
+    public function sendToFile($metric)
+    {
+        file_put_contents($this->config[self::CFG_OUT_FILE_PATH], $metric . "\n", FILE_APPEND);
     }
 }

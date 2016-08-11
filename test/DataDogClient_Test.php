@@ -19,6 +19,8 @@ namespace Kicaj\Test\DataDog;
 
 use Kicaj\DataDog\DataDogClient;
 use Kicaj\DataDog\DataDogClientException;
+use org\bovigo\vfs\vfsStream;
+use PHPUnit_Framework_Error_Warning;
 
 /**
  * DataDogClient_Test.
@@ -309,6 +311,66 @@ class DataDogClient_Test extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::send
+     *
+     * @expectedException \Kicaj\DataDog\DataDogClientException
+     * @expectedExceptionMessage Unknown metric send type: __not_supported__
+     */
+    public function test_send_unsupportedVia()
+    {
+        // Given
+        $dd = new DataDogClient();
+
+        // When
+        $dd->setConfig(DataDogClient::CFG_UDP_KIND, '__not_supported__');
+
+        // Then
+        $dd->increment('metric');
+    }
+
+    /**
+     * @covers ::send
+     * @covers ::sendToFile
+     *
+     * @expectedException PHPUnit_Framework_Error_Warning
+     * @expectedExceptionMessageRegExp /Filename cannot be empty/
+     */
+    public function test_send_toFile_error()
+    {
+        // Given
+        $dd = new DataDogClient();
+
+        // When
+        $dd->setConfig(DataDogClient::CFG_UDP_KIND, DataDogClient::UDP_FILE);
+
+        // Then
+        $dd->increment('metric');
+    }
+
+    /**
+     * @covers ::send
+     * @covers ::sendToFile
+     */
+    public function test_send_toFile()
+    {
+        // Given
+        $root = vfsStream::setup('dir');
+        $testFile = vfsStream::newFile('metrics.txt')->at($root);
+        $dd = new DataDogClient();
+
+        // When
+        $dd->setConfig(DataDogClient::CFG_UDP_KIND, DataDogClient::UDP_FILE);
+        $dd->setConfig(DataDogClient::CFG_OUT_FILE_PATH, $testFile->url());
+
+        // Then
+        $dd->increment('metric');
+        $dd->event('title', 'text', [], ['tag1']);
+
+        $expected = "metric:1|c\n_e{5,4}:title|text|#tag1\n";
+        $this->assertSame($expected, $testFile->getContent());
+    }
+
+    /**
      * @covers ::event
      */
     public function test_event_viaHttp()
@@ -346,6 +408,65 @@ class DataDogClient_Test extends \PHPUnit_Framework_TestCase
 
         // When
         $dd->event('title', 'text');
+    }
+
+    /**
+     * @covers ::event
+     *
+     * @expectedException \Kicaj\DataDog\DataDogClientException
+     * @expectedExceptionMessage Unknown event send type: __not_supported__
+     */
+    public function test_event_unsupportedVia()
+    {
+        // Given
+        $dd = new DataDogClient();
+
+        // When
+        $dd->setConfig(DataDogClient::CFG_EVENTS_VIA, '__not_supported__');
+
+        // Then
+        $dd->event('title', 'message');
+    }
+
+    /**
+     * @dataProvider eventProvider
+     *
+     * @covers ::event
+     * @covers ::eventUdp
+     *
+     * @param string $title
+     * @param string $text
+     * @param array  $opt
+     * @param array  $tags
+     * @param string $expMetric
+     *
+     * @throws DataDogClientException
+     */
+    public function test_event($title, $text, $opt, $tags, $expMetric)
+    {
+        // Given
+        $dd = $this->getMockedSend($expMetric);
+
+        // When
+        $dd->event($title, $text, $opt, $tags);
+    }
+
+    public function eventProvider()
+    {
+        return [
+            ['title', 'text', [], [], '_e{5,4}:title|text'],
+            ['title', 'text', ['date_happened' => 123], [], '_e{5,4}:title|text|d:123'],
+            ['title', 'text', ['hostname' => 'host'], [], '_e{5,4}:title|text|h:host'],
+            ['title', 'text', ['aggregation_key' => 'abc'], [], '_e{5,4}:title|text|k:abc'],
+            ['title', 'text', ['priority' => 'low'], [], '_e{5,4}:title|text|p:low'],
+            ['title', 'text', ['source_type_name' => 'type'], [], '_e{5,4}:title|text|s:type'],
+            ['title', 'text', ['alert_type' => 'a_type'], [], '_e{5,4}:title|text|t:a_type'],
+            ['title', 'text', ['not_supported' => 'not'], [], '_e{5,4}:title|text'],
+            ['title', 'text', ['alert_type' => 'a_type'], ['tag1'], '_e{5,4}:title|text|t:a_type|#tag1'],
+            ['title', 'text', ['alert_type' => 'a_type'], ['tag1', 'tag2'], '_e{5,4}:title|text|t:a_type|#tag1,tag2'],
+            ['title', 'text', ['alert_type' => 'a_type'], ['tag1' => 'v1'], '_e{5,4}:title|text|t:a_type|#tag1:v1'],
+            ['title', 'text', ['alert_type' => 'a_type'], ['tag1' => 'v1', 'tag2' => 'v2'], '_e{5,4}:title|text|t:a_type|#tag1:v1,tag2:v2'],
+        ];
     }
 
     /**
@@ -634,7 +755,7 @@ class DataDogClient_Test extends \PHPUnit_Framework_TestCase
         // Then
         $this->assertTrue($avgRemoved >= $minAvgRemoved && $avgRemoved <= $maxAvgRemoved);
     }
-    
+
     public function sampleProvider()
     {
         return [

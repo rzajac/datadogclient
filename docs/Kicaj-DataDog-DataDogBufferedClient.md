@@ -1,6 +1,6 @@
 ## Class Kicaj\DataDog\DataDogBufferedClient
 DataDog buffered client.
-Very simple PHP [datadogstatsd](http://www.datadoghq.com/) client.
+Very simple PHP [DataDog](http://www.datadoghq.com/) client.
 ## Extends
 
 - Kicaj\DataDog\DataDogClient
@@ -10,6 +10,7 @@ Very simple PHP [datadogstatsd](http://www.datadoghq.com/) client.
 ```php
 const UDP_BLOCKING = 'UDP_BLOCKING';
 const UDP_NON_BLOCKING = 'UDP_NON_BLOCKING';
+const UDP_FILE = 'file';
 const EVENT_VIA_UDP = 'UDP';
 const EVENT_VIA_HTTP = 'TCP';
 const SERVICE_OK = 0;
@@ -24,6 +25,7 @@ const CFG_SSL_VERIFY_HOST = 'curlSslVerifyHost';
 const CFG_SSL_VERIFY_PEER = 'curlSslVerifyPeer';
 const CFG_UDP_KIND = 'udpKind';
 const CFG_EVENTS_VIA = 'eventsVia';
+const CFG_OUT_FILE_PATH = 'outFilePath';
 ```
 
 ## Methods
@@ -44,7 +46,7 @@ const CFG_EVENTS_VIA = 'eventsVia';
 DataDog client configuration.
 
 ```php
-protected array $config = array(self::CFG_SERVER => 'localhost', self::CFG_SERVER_PORT => 8125, self::CFG_DATADOG_URL => 'https://app.datadoghq.com', self::CFG_EVENT_PATH => '/api/v1/events', self::CFG_SSL_VERIFY_HOST => 2, self::CFG_SSL_VERIFY_PEER => true, self::CFG_UDP_KIND => self::UDP_NON_BLOCKING, self::CFG_EVENTS_VIA => self::EVENT_VIA_UDP)
+protected array $config = array(self::CFG_SERVER => 'localhost', self::CFG_SERVER_PORT => 8125, self::CFG_DATADOG_URL => 'https://app.datadoghq.com', self::CFG_EVENT_PATH => '/api/v1/events', self::CFG_SSL_VERIFY_HOST => 2, self::CFG_SSL_VERIFY_PEER => true, self::CFG_UDP_KIND => self::UDP_NON_BLOCKING, self::CFG_EVENTS_VIA => self::EVENT_VIA_UDP, self::CFG_OUT_FILE_PATH => '')
 ```
 
 #### $apiKey

@@ -1,11 +1,12 @@
 ## Class Kicaj\DataDog\DataDogClient
 DataDog client.
-Very simple PHP [datadogstatsd](http://www.datadoghq.com/) client.
+Very simple PHP [DataDog](http://www.datadoghq.com/) client.
 ## Constants
 
 ```php
 const UDP_BLOCKING = 'UDP_BLOCKING';
 const UDP_NON_BLOCKING = 'UDP_NON_BLOCKING';
+const UDP_FILE = 'file';
 const EVENT_VIA_UDP = 'UDP';
 const EVENT_VIA_HTTP = 'TCP';
 const SERVICE_OK = 0;
@@ -20,6 +21,7 @@ const CFG_SSL_VERIFY_HOST = 'curlSslVerifyHost';
 const CFG_SSL_VERIFY_PEER = 'curlSslVerifyPeer';
 const CFG_UDP_KIND = 'udpKind';
 const CFG_EVENTS_VIA = 'eventsVia';
+const CFG_OUT_FILE_PATH = 'outFilePath';
 ```
 
 ## Methods
@@ -31,7 +33,7 @@ const CFG_EVENTS_VIA = 'eventsVia';
 |          [increment](#increment)           |          [decrement](#decrement)           |           [eventUdp](#eventudp)            |              [event](#event)               |
 |          [eventHttp](#eventhttp)           |         [checkError](#checkerror)          |       [serviceCheck](#servicecheck)        |     [buildEventPost](#buildeventpost)      |
 |       [parseAndSend](#parseandsend)        |          [buildTags](#buildtags)           |       [isAssocArray](#isassocarray)        |             [sample](#sample)              |
-|               [send](#send)                | [sendUdpNonBlocking](#sendudpnonblocking)  |    [sendUdpBlocking](#sendudpblocking)     |                   [](#)                    |
+|               [send](#send)                | [sendUdpNonBlocking](#sendudpnonblocking)  |    [sendUdpBlocking](#sendudpblocking)     |         [sendToFile](#sendtofile)          |
 
 ## Properties
 
@@ -45,7 +47,7 @@ const CFG_EVENTS_VIA = 'eventsVia';
 DataDog client configuration.
 
 ```php
-protected array $config = array(self::CFG_SERVER => 'localhost', self::CFG_SERVER_PORT => 8125, self::CFG_DATADOG_URL => 'https://app.datadoghq.com', self::CFG_EVENT_PATH => '/api/v1/events', self::CFG_SSL_VERIFY_HOST => 2, self::CFG_SSL_VERIFY_PEER => true, self::CFG_UDP_KIND => self::UDP_NON_BLOCKING, self::CFG_EVENTS_VIA => self::EVENT_VIA_UDP)
+protected array $config = array(self::CFG_SERVER => 'localhost', self::CFG_SERVER_PORT => 8125, self::CFG_DATADOG_URL => 'https://app.datadoghq.com', self::CFG_EVENT_PATH => '/api/v1/events', self::CFG_SSL_VERIFY_HOST => 2, self::CFG_SSL_VERIFY_PEER => true, self::CFG_UDP_KIND => self::UDP_NON_BLOCKING, self::CFG_EVENTS_VIA => self::EVENT_VIA_UDP, self::CFG_OUT_FILE_PATH => '')
 ```
 
 #### $apiKey
@@ -106,7 +108,7 @@ public function histogram(string $metricName, float $value, array $tags, float $
 Arguments:
 - _$metricName_ **string** - The metric name., 
 - _$value_ **float** - The metric value., 
-- _$tags_ **array** - The associative array of tag =&gt; value., 
+- _$tags_ **array** - The indexed array of tags or associative tag =&gt; value., 
 - _$sampleRate_ **float** - The rate of sampling 0 to 1 (0-100%).
 
 Throws:
@@ -121,7 +123,7 @@ public function gauge(string $metricName, float $value, array $tags, float $samp
 Arguments:
 - _$metricName_ **string** - The metric name., 
 - _$value_ **float** - The metric value., 
-- _$tags_ **array** - The associative array of tag =&gt; value., 
+- _$tags_ **array** - The indexed array of tags or associative tag =&gt; value., 
 - _$sampleRate_ **float** - The rate of sampling 0 to 1 (0-100%).
 
 Throws:
@@ -136,7 +138,7 @@ public function set(string $metricName, float $value, array $tags, float $sample
 Arguments:
 - _$metricName_ **string** - The metric name., 
 - _$value_ **float** - The metric value., 
-- _$tags_ **array** - The associative array of tag =&gt; value., 
+- _$tags_ **array** - The indexed array of tags or associative tag =&gt; value., 
 - _$sampleRate_ **float** - The rate of sampling 0 to 1 (0-100%).
 
 Throws:
@@ -151,7 +153,7 @@ public function counter(string $metricName, integer $delta, array $tags, float $
 Arguments:
 - _$metricName_ **string** - The metric name., 
 - _$delta_ **integer** - The counter delta value., 
-- _$tags_ **array** - The associative array of tag =&gt; value., 
+- _$tags_ **array** - The indexed array of tags or associative tag =&gt; value., 
 - _$sampleRate_ **float** - The rate of sampling 0 to 1 (0-100%).
 
 Throws:
@@ -165,7 +167,7 @@ public function increment(string $metricName, array $tags, float $sampleRate) :
 ```
 Arguments:
 - _$metricName_ **string** - The metric name., 
-- _$tags_ **array** - The associative array of tag =&gt; value., 
+- _$tags_ **array** - The indexed array of tags or associative tag =&gt; value., 
 - _$sampleRate_ **float** - The rate of sampling 0 to 1 (0-100%).
 
 Throws:
@@ -179,7 +181,7 @@ public function decrement(string $metricName, array $tags, float $sampleRate) :
 ```
 Arguments:
 - _$metricName_ **string** - The metric name., 
-- _$tags_ **array** - The associative array of tag =&gt; value., 
+- _$tags_ **array** - The indexed array of tags or associative tag =&gt; value., 
 - _$sampleRate_ **float** - The rate of sampling 0 to 1 (0-100%).
 
 Throws:
@@ -195,7 +197,7 @@ Arguments:
 - _$title_ **string** - The event title., 
 - _$text_ **string** - The event text. Supports line breaks., 
 - _$opt_ **array** - The optional fields., 
-- _$tags_ **array** - The associative array of tag =&gt; value.
+- _$tags_ **array** - The indexed array of tags or associative tag =&gt; value.
 
 Throws:
 - [Kicaj\DataDog\DataDogClientException](Kicaj-DataDog-DataDogClientException.md)
@@ -210,7 +212,7 @@ Arguments:
 - _$title_ **string** - The event title., 
 - _$text_ **string** - The event text. Supports line breaks., 
 - _$opt_ **array** - The optional fields., 
-- _$tags_ **array** - The associative array of tag =&gt; value.
+- _$tags_ **array** - The indexed array of tags or associative tag =&gt; value.
 
 Throws:
 - [Kicaj\DataDog\DataDogClientException](Kicaj-DataDog-DataDogClientException.md)
@@ -225,7 +227,7 @@ Arguments:
 - _$title_ **string** - The event title., 
 - _$text_ **string** - The event text. Supports line breaks., 
 - _$opt_ **array** - The optional fields., 
-- _$tags_ **array** - The associative array of tag =&gt; value.
+- _$tags_ **array** - The indexed array of tags or associative tag =&gt; value.
 
 Throws:
 - [Kicaj\DataDog\DataDogClientException](Kicaj-DataDog-DataDogClientException.md)
@@ -253,7 +255,7 @@ Arguments:
 - _$name_ **string** - The service check name string., 
 - _$status_ **integer** - The one of self::SERVICE_* statuses., 
 - _$opt_ **array** - The optional fields., 
-- _$tags_ **array** - The associative array of tag =&gt; value.
+- _$tags_ **array** - The indexed array of tags or associative tag =&gt; value.
 
 Throws:
 - [Kicaj\DataDog\DataDogClientException](Kicaj-DataDog-DataDogClientException.md)
@@ -268,7 +270,7 @@ Arguments:
 - _$title_ **string** - The event title., 
 - _$text_ **string** - The event text. Supports line breaks., 
 - _$opt_ **array** - The optional fields., 
-- _$tags_ **array** - The associative array of tag =&gt; value.
+- _$tags_ **array** - The indexed array of tags or associative tag =&gt; value.
 
 Returns: **array**
 
@@ -280,7 +282,7 @@ public function parseAndSend(array $data, array $tags, float $sampleRate) :
 ```
 Arguments:
 - _$data_ **array** - The array with metrics., 
-- _$tags_ **array** - The associative array of tag =&gt; value to add to metrics., 
+- _$tags_ **array** - The indexed array of tags or associative tag =&gt; value., 
 - _$sampleRate_ **float** - The rate of sampling 0 to 1 (0-100%).
 
 Throws:
@@ -293,7 +295,7 @@ Build tags for metric.
 public function buildTags(array $tags) : string
 ```
 Arguments:
-- _$tags_ **array** - The associative array of tag =&gt; value to add to metrics.
+- _$tags_ **array** - The indexed array of tags or associative tag =&gt; value.
 
 Returns: **string**
 
@@ -362,5 +364,14 @@ Arguments:
 
 Throws:
 - [Kicaj\DataDog\DataDogClientException](Kicaj-DataDog-DataDogClientException.md)
+
+-------
+#### sendToFile
+Send metric to file.
+```php
+public function sendToFile(string $metric) : 
+```
+Arguments:
+- _$metric_ **string** - The metric to send to DataDog.
 
 -------
