@@ -1,0 +1,6 @@
+{
+  "tmp": "tmp",
+  "doc": "docs",
+  "src": "src",
+  "project_name": "DataDog client"
+}
