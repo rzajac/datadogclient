@@ -498,6 +498,12 @@ class DataDogClient_Test extends \PHPUnit_Framework_TestCase
 
     public function configProvider()
     {
+        if (function_exists('socket_create')) {
+            $udpKind = DataDogClient::UDP_BLOCKING;
+        } else {
+            $udpKind = DataDogClient::UDP_NON_BLOCKING;
+        }
+
         return [
             [DataDogClient::CFG_SERVER, 'abc'],
             [DataDogClient::CFG_SERVER_PORT, 1234],
@@ -505,7 +511,7 @@ class DataDogClient_Test extends \PHPUnit_Framework_TestCase
             [DataDogClient::CFG_EVENT_PATH, '/new/path'],
             [DataDogClient::CFG_SSL_VERIFY_HOST, 124],
             [DataDogClient::CFG_SSL_VERIFY_PEER, false],
-            [DataDogClient::CFG_UDP_KIND, DataDogClient::UDP_BLOCKING],
+            [DataDogClient::CFG_UDP_KIND, $udpKind],
             [DataDogClient::CFG_EVENTS_VIA, DataDogClient::EVENT_VIA_HTTP],
         ];
     }
@@ -775,6 +781,8 @@ class DataDogClient_Test extends \PHPUnit_Framework_TestCase
         // Then
         $dd->checkError(200, '{"status": "ok"}');
         $dd->checkError(202, '{"status": "ok"}');
+
+        $this->assertTrue(true);
     }
 
     /**

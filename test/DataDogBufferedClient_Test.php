@@ -117,13 +117,13 @@ class DataDogBufferedClient_Test extends \PHPUnit_Framework_TestCase
         // Given
         $dd = $this->getMockBuilder(DataDogBufferedClient::class)
                    ->setConstructorArgs([3])
-                   ->setMethods(['sendUdpNonBlocking'])
+                   ->setMethods(['sendUdpBlocking'])
                    ->getMock();
 
         $expected = "name1:1|c\nname2:1|c\nname3:1|c";
 
         $dd->expects($this->once())
-           ->method('sendUdpNonBlocking')
+           ->method('sendUdpBlocking')
            ->with($this->equalTo($expected));
 
         // When

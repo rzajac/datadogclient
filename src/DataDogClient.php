@@ -89,6 +89,10 @@ class DataDogClient
      */
     public function __construct($apiKey = '')
     {
+        if (!function_exists('socket_create')) {
+            $this->config[self::CFG_UDP_KIND] = self::UDP_BLOCKING;
+        }
+
         $this->apiKey = $apiKey;
     }
 

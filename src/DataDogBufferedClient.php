@@ -87,8 +87,10 @@ class DataDogBufferedClient extends DataDogClient
      */
     public function flushBuffer()
     {
-        parent::send(join("\n", $this->buffer));
-        $this->buffer = [];
+        if ($this->buffer) {
+            parent::send(join("\n", $this->buffer));
+            $this->buffer = [];
+        }
     }
 
     /**
