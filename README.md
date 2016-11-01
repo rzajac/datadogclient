@@ -7,7 +7,7 @@ Very simple [DataDog](http://www.datadoghq.com/) client.
 ```json
 {
     "require": {
-        "rzajac/datadogclient": "0.6.*"
+        "rzajac/datadogclient": "0.7.*"
     }
 }
 ```

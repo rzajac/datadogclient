@@ -446,7 +446,9 @@ class DataDogClient
         if ($this->isAssocArray($tags)) {
             $str = '';
             foreach ($tags as $tagKey => $tagVal) {
-                $str .= "$tagKey:$tagVal,";
+                if ($tagVal != '') {
+                    $str .= "$tagKey:$tagVal,";
+                }
             }
             $str = substr($str, 0, -1);
         } else {
