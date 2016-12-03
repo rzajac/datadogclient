@@ -19,26 +19,32 @@ Very simple [DataDog](http://www.datadoghq.com/) client.
 ## Run unit tests
 
 ```
-$ composer install
-$ vendor/bin/phpunit --coverage-html=coverage
+$ vendor/bin/phpunit --coverage-text
+PHPUnit 4.8.27 by Sebastian Bergmann and contributors.
 
-................................................................. 65 / 98 ( 66%)
-.................................                                 98 / 98 (100%)
+Runtime:	PHP 5.5.36 with Xdebug 2.4.1
+Configuration:	/Users/thor/ws/DataDog/phpunit.xml
 
-Time: 974 ms, Memory: 8.00MB
+...............................................................  63 / 108 ( 58%)
+.............................................
 
-OK (98 tests, 120 assertions)
+Time: 2.77 seconds, Memory: 10.75MB
+
+OK (108 tests, 131 assertions)
+
+Generating code coverage report in HTML format ... done
+
 
 Code Coverage Report:
-  2016-08-11 21:51:18
+  2016-12-03 12:52:26
 
  Summary:
   Classes: 66.67% (2/3)
   Methods: 89.66% (26/29)
-  Lines:   77.63% (118/152)
+  Lines:   79.89% (139/174)
 
 \Kicaj\DataDog::DataDogBufferedClient
-  Methods: 100.00% ( 5/ 5)   Lines: 100.00% ( 13/ 13)
+  Methods: 100.00% ( 5/ 5)   Lines: 100.00% ( 15/ 15)
 \Kicaj\DataDog::DataDogClient
-  Methods:  87.50% (21/24)   Lines:  75.54% (105/139)
+  Methods:  87.50% (21/24)   Lines:  77.99% (124/159)
 ```
